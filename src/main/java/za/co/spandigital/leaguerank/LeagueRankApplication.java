@@ -1,17 +1,14 @@
 package za.co.spandigital.leaguerank;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class LeagueRankApplication {
 
-    static List<Match> matches = new ArrayList<>();
-    public static String getInput(String newLine){
-        return String.join(newLine,
-                "Tarantulas 1, FC Awesome 0",
-                "Lions 3, Snakes 3",
-                "Lions 1, FC Awesome 1",
-                "Tarantulas 3, Snakes 1",
-                "Lions 4, Grouches 0");
+    public static String getFileInput(String filePath) throws IOException {
+        return Files.readString(Path.of(filePath));
     }
 
     public static class Match{
@@ -35,7 +32,7 @@ public class LeagueRankApplication {
         }
 
         public List<TeamPoints> getResults(){
-          return List.of(new TeamPoints(team1, getTeam1Points()), new TeamPoints(team2, getTeam2Points()));
+            return List.of(new TeamPoints(team1, getTeam1Points()), new TeamPoints(team2, getTeam2Points()));
         }
     }
 
@@ -50,52 +47,50 @@ public class LeagueRankApplication {
 
     public static class TeamPointsRank extends TeamPoints{
         int rank;
-
         public TeamPointsRank(String team, Integer points) {
             super(team, points);
         }
     }
 
-    public static void main(String[] args) {
-        var newLine = System.getProperty("line.separator");
-        Arrays.stream(getInput(newLine)
-                .split(newLine))
-                .forEach(s -> {
-                            var line = s.split(",");
-                            var teamGoals1 = line[0].trim().split("(?<=\\D)(?=\\d)");
-                            var teamGoals2 = line[1].trim().split("(?<=\\D)(?=\\d)");
-                            matches.add(new Match(teamGoals1[0], Integer.parseInt(teamGoals1[1]),
-                                                  teamGoals2[0], Integer.parseInt(teamGoals2[1])));
-                        });
+    public static Match createMatch(String line){
+        var teamScores = line.split(",");
+        var teamGoals1 = teamScores[0].trim().split("(?<=\\D)(?=\\d)");
+        var teamGoals2 = teamScores[1].trim().split("(?<=\\D)(?=\\d)");
+        return new Match(teamGoals1[0], Integer.parseInt(teamGoals1[1]),
+                         teamGoals2[0], Integer.parseInt(teamGoals2[1]));
+    }
 
-        var tprList = matches.stream()
+    public static void main(String[] args) throws IOException {
+        var newLine = System.getProperty("line.separator");
+        var tprList = Arrays.stream(getFileInput(args[0])
+                .split(newLine))
+                .map(LeagueRankApplication::createMatch)
                 .map(Match::getResults)
                 .flatMap(Collection::stream)
                 .collect(Collectors.groupingBy(teamPoints -> teamPoints.team,
-                                               Collectors.summingInt(value -> value.points)))
-                .entrySet()
-                .stream()
+                         Collectors.summingInt(value -> value.points)))
+                .entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .map(e -> new TeamPointsRank(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
-        int r = 0;
+
+        int ranking = 0;
         int previousPoints = -1;
         for (TeamPointsRank tpr:tprList){
             if (tpr.points == previousPoints){
-                tpr.rank = r;
+                tpr.rank = ranking;
             }else {
-                tpr.rank = ++r;
+                tpr.rank = ++ranking;
             }
             previousPoints = tpr.points;
         }
 
-        tprList.stream()
+        tprList .stream()
                 .sorted(Comparator.comparingInt((TeamPointsRank value) -> value.rank))
                 .forEach(teamPointsRank ->
                         System.out.println(teamPointsRank.rank + ". " +
                                            teamPointsRank.team + ", " +
                                            teamPointsRank.points + " pt" +
-                                          (teamPointsRank.points==1?"":"s")
-                        ));
+                                          (teamPointsRank.points==1?"":"s")));
     }
 }
