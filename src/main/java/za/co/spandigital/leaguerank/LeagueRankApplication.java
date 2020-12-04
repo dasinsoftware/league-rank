@@ -1,8 +1,10 @@
 package za.co.spandigital.leaguerank;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class LeagueRankApplication {
@@ -47,8 +49,9 @@ public class LeagueRankApplication {
 
     public static class TeamPointsRank extends TeamPoints{
         int rank;
-        public TeamPointsRank(String team, Integer points) {
+        public TeamPointsRank(String team, Integer points, int rank) {
             super(team, points);
+            this.rank = rank;
         }
     }
 
@@ -60,9 +63,22 @@ public class LeagueRankApplication {
                          teamGoals2[0], Integer.parseInt(teamGoals2[1]));
     }
 
+    public static int getRanking(AtomicInteger ranking, AtomicInteger previousPoints, Integer points){
+        int result;
+        if (points == previousPoints.get()){
+            result = ranking.get();
+        }else{
+            result = ranking.addAndGet(1);
+        }
+        previousPoints.set(points);
+        return result;
+    }
+
     public static void main(String[] args) throws IOException {
+        var aiRanking = new AtomicInteger(0);
+        var aiPreviousPoints = new AtomicInteger(-1);
         var newLine = System.getProperty("line.separator");
-        var tprList = Arrays.stream(getFileInput(args[0])
+        Arrays.stream(getFileInput(args[0])
                 .split(newLine))
                 .map(LeagueRankApplication::createMatch)
                 .map(Match::getResults)
@@ -71,22 +87,9 @@ public class LeagueRankApplication {
                          Collectors.summingInt(value -> value.points)))
                 .entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .map(e -> new TeamPointsRank(e.getKey(), e.getValue()))
-                .collect(Collectors.toList());
-
-        int ranking = 0;
-        int previousPoints = -1;
-        for (TeamPointsRank tpr:tprList){
-            if (tpr.points == previousPoints){
-                tpr.rank = ranking;
-            }else {
-                tpr.rank = ++ranking;
-            }
-            previousPoints = tpr.points;
-        }
-
-        tprList .stream()
-                .sorted(Comparator.comparingInt((TeamPointsRank value) -> value.rank))
+                .map(e -> new TeamPointsRank(e.getKey(), e.getValue(),getRanking(aiRanking, aiPreviousPoints, e.getValue()) ))
+                .sorted(Comparator.comparingInt((TeamPointsRank value) -> value.rank)
+                                  .thenComparing((TeamPointsRank s) -> s.team))
                 .forEach(teamPointsRank ->
                         System.out.println(teamPointsRank.rank + ". " +
                                            teamPointsRank.team + ", " +
