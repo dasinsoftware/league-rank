@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-group 'org.example'
+group 'za.co.spandigital'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -20,6 +20,9 @@ application {
     mainClass = 'za.co.spandigital.leaguerank.LeagueRankApplication'
 }
 
+test {
+    useJUnitPlatform()
+}
 
 dependencies {
     implementation 'org.junit.jupiter:junit-jupiter:5.4.2'

@@ -47,9 +47,9 @@ public class LeagueRankApplication {
          }
     }
 
-    public static class TeamPointsRank extends TeamPoints{
+    public static class RankedTeam extends TeamPoints{
         int rank;
-        public TeamPointsRank(String team, Integer points, int rank) {
+        public RankedTeam(String team, Integer points, int rank) {
             super(team, points);
             this.rank = rank;
         }
@@ -77,9 +77,8 @@ public class LeagueRankApplication {
     public static void main(String[] args) throws IOException {
         var aiRanking = new AtomicInteger(0);
         var aiPreviousPoints = new AtomicInteger(-1);
-        var newLine = System.getProperty("line.separator");
         Arrays.stream(getFileInput(args[0])
-                .split(newLine))
+                .split(System.getProperty("line.separator")))
                 .map(LeagueRankApplication::createMatch)
                 .map(Match::getResults)
                 .flatMap(Collection::stream)
@@ -87,13 +86,15 @@ public class LeagueRankApplication {
                          Collectors.summingInt(value -> value.points)))
                 .entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .map(e -> new TeamPointsRank(e.getKey(), e.getValue(),getRanking(aiRanking, aiPreviousPoints, e.getValue()) ))
-                .sorted(Comparator.comparingInt((TeamPointsRank value) -> value.rank)
-                                  .thenComparing((TeamPointsRank s) -> s.team))
-                .forEach(teamPointsRank ->
-                        System.out.println(teamPointsRank.rank + ". " +
-                                           teamPointsRank.team + ", " +
-                                           teamPointsRank.points + " pt" +
-                                          (teamPointsRank.points==1?"":"s")));
+                .map(e -> new RankedTeam(e.getKey(),
+                                             e.getValue(),
+                                             getRanking(aiRanking, aiPreviousPoints, e.getValue())))
+                .sorted(Comparator.comparingInt((RankedTeam value) -> value.rank)
+                                  .thenComparing((RankedTeam s) -> s.team))
+                .forEach(rankedTeam ->
+                        System.out.println(rankedTeam.rank + ". " +
+                                           rankedTeam.team + ", " +
+                                           rankedTeam.points + " pt" +
+                                          (rankedTeam.points==1?"":"s")));
     }
 }
