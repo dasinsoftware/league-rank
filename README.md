@@ -14,7 +14,7 @@ This GitHub repository contains the League-rank CLI -  and supports the followin
 
 ## Getting started
 
-- Build the tool from the source (```gradlew build```), or download the prebuilt [league-rank](https://github.com/dasinsoftware/league-rank/releases) ZIP file. 
+- Build the tool from the source (```gradlew build installDist```), or download the prebuilt [league-rank](https://github.com/dasinsoftware/league-rank/releases) ZIP file. 
 
 ## Usage
 
