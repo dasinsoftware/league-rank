@@ -8,7 +8,8 @@ This GitHub repository contains the League-rank CLI -  and supports the followin
 	
 ## Prerequisites
 
-- You must have Java 11 or above installed, and available to use on your command line (__please note that the CLI does not work with Java versions 10 or below).
+- You must have Java 11 or above installed, and available to use on your command line (Please note that the CLI does not 
+  work with Java versions 10 or below).
 
 
 ## Getting started
