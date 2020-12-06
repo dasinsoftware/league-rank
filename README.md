@@ -2,6 +2,9 @@
 
 This GitHub repository contains the League-rank CLI -  and supports the following functionality:
 
+- Will take a single argument of the path to a file which contain scores to matches. Format shown below. The application 
+  will then generate the league standings of the teams that were in that file.   
+
 	
 ## Prerequisites
 
