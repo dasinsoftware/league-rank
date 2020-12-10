@@ -1,5 +1,9 @@
 package za.co.spandigital.leaguerank;
 
+import za.co.spandigital.leaguerank.model.Match;
+import za.co.spandigital.leaguerank.model.RankedTeam;
+import za.co.spandigital.leaguerank.model.TeamPoints;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,54 +17,37 @@ public class LeagueRankApplication {
         return Files.readString(Path.of(filePath));
     }
 
-    public static class Match{
-        String team1;
-        Integer goals1;
-        String team2;
-        Integer goals2;
-
-        public Match(String team1, Integer goals1, String team2, Integer goals2 ){
-            this.team1 = team1;
-            this.goals1 = goals1;
-            this.team2 = team2;
-            this.goals2 = goals2;
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
         }
-
-        private Integer getTeam1Points(){
-            return goals1 > goals2 ? 3 : goals1.equals(goals2) ? 1 : 0;
+        try {
+            Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
         }
-        private Integer getTeam2Points(){
-            return goals2 > goals1 ? 3 : goals1.equals(goals2) ? 1 : 0;
-        }
-
-        public List<TeamPoints> getResults(){
-            return List.of(new TeamPoints(team1, getTeam1Points()), new TeamPoints(team2, getTeam2Points()));
-        }
+        return true;
     }
 
-    public static class TeamPoints{
-         String team;
-         Integer points;
-         public TeamPoints(String team, Integer points){
-             this.team = team;
-             this.points = points;
-         }
-    }
 
-    public static class RankedTeam extends TeamPoints{
-        int rank;
-        public RankedTeam(String team, Integer points, int rank) {
-            super(team, points);
-            this.rank = rank;
+    public static int lastSpacePos(String teamscore){
+        for (int i = teamscore.length() - 1; i >= 0; i--) {
+            if (!isNumeric(Character.toString(teamscore.charAt(i)))){
+                return i;
+            }
         }
+        return -1;
     }
 
     public static Match createMatch(String line){
         var teamScores = line.split(",");
-        var teamGoals1 = teamScores[0].trim().split("(?<=\\D)(?=\\d)");
-        var teamGoals2 = teamScores[1].trim().split("(?<=\\D)(?=\\d)");
-        return new Match(teamGoals1[0], Integer.parseInt(teamGoals1[1]),
-                         teamGoals2[0], Integer.parseInt(teamGoals2[1]));
+        var goals1 = teamScores[0].substring( lastSpacePos(teamScores[0]) + 1);
+        var team1  = teamScores[0].substring(0, lastSpacePos(teamScores[0])).trim();
+        var goals2 = teamScores[1].substring( lastSpacePos(teamScores[1]) + 1);
+        var team2  = teamScores[1].substring(0, lastSpacePos(teamScores[1])).trim();
+
+        return new Match(team1, Integer.parseInt(goals1),
+                         team2, Integer.parseInt(goals2));
     }
 
     public static int getRanking(AtomicInteger ranking,
@@ -89,8 +76,8 @@ public class LeagueRankApplication {
                 .map(LeagueRankApplication::createMatch)
                 .map(Match::getResults)
                 .flatMap(Collection::stream)
-                .collect(Collectors.groupingBy(teamPoints -> teamPoints.team,
-                         Collectors.summingInt(value -> value.points)))
+                .collect(Collectors.groupingBy(TeamPoints::getTeam,
+                         Collectors.summingInt(TeamPoints::getPoints)))
                 .entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .map(e -> new RankedTeam(e.getKey(),
@@ -98,12 +85,12 @@ public class LeagueRankApplication {
                                                                   aiPreviousPoints,
                                                                   e.getValue(),
                                                                   numTeams)))
-                .sorted(Comparator.comparingInt((RankedTeam value) -> value.rank)
-                                  .thenComparing((RankedTeam s) -> s.team))
+                .sorted(Comparator.comparingInt(RankedTeam::getRank)
+                                  .thenComparing(TeamPoints::getTeam))
                 .forEach(rankedTeam ->
-                        System.out.println(rankedTeam.rank + ". " +
-                                           rankedTeam.team + ", " +
-                                           rankedTeam.points + " pt" +
-                                          (rankedTeam.points==1?"":"s")));
+                        System.out.println(rankedTeam.getRank() + ". " +
+                                           rankedTeam.getTeam() + " , " +
+                                           rankedTeam.getPoints() + " pt" +
+                                          (rankedTeam.getPoints()==1?"":"s")));
     }
 }

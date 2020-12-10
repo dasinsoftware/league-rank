@@ -29,7 +29,7 @@ class LeagueRankApplicationTest {
     @Test
     void main() throws IOException {
         LeagueRankApplication.main(new String[]{"match-scores.txt"});
-        assertEquals("1. Tarantulas , 6 pts\n" +
+        assertEquals("1. Taran6tulas , 6 pts\n" +
                               "2. Lions , 5 pts\n" +
                               "3. FC Awesome , 1 pt\n" +
                               "3. Snakes , 1 pt\n" +
