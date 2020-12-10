@@ -63,20 +63,27 @@ public class LeagueRankApplication {
                          teamGoals2[0], Integer.parseInt(teamGoals2[1]));
     }
 
-    public static int getRanking(AtomicInteger ranking, AtomicInteger previousPoints, Integer points){
+    public static int getRanking(AtomicInteger ranking,
+                                 AtomicInteger previousPoints,
+                                 Integer points,
+                                 AtomicInteger numTeams){
         int result;
+        numTeams.addAndGet(1);
         if (points == previousPoints.get()){
             result = ranking.get();
         }else{
-            result = ranking.addAndGet(1);
+            ranking.addAndGet(1);
+            result = numTeams.get();
         }
         previousPoints.set(points);
         return result;
     }
 
     public static void main(String[] args) throws IOException {
+
         var aiRanking = new AtomicInteger(0);
         var aiPreviousPoints = new AtomicInteger(-1);
+        var numTeams = new AtomicInteger(0);
         Arrays.stream(getFileInput(args[0])
                 .split(System.getProperty("line.separator")))
                 .map(LeagueRankApplication::createMatch)
@@ -87,8 +94,10 @@ public class LeagueRankApplication {
                 .entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .map(e -> new RankedTeam(e.getKey(),
-                                             e.getValue(),
-                                             getRanking(aiRanking, aiPreviousPoints, e.getValue())))
+                                         e.getValue(), getRanking(aiRanking,
+                                                                  aiPreviousPoints,
+                                                                  e.getValue(),
+                                                                  numTeams)))
                 .sorted(Comparator.comparingInt((RankedTeam value) -> value.rank)
                                   .thenComparing((RankedTeam s) -> s.team))
                 .forEach(rankedTeam ->

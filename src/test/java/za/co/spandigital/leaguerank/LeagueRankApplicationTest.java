@@ -33,6 +33,6 @@ class LeagueRankApplicationTest {
                               "2. Lions , 5 pts\n" +
                               "3. FC Awesome , 1 pt\n" +
                               "3. Snakes , 1 pt\n" +
-                              "4. Grouches , 0 pts\n", bytes.toString());
+                              "5. Grouches , 0 pts\n", bytes.toString());
     }
 }
