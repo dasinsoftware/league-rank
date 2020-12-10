@@ -29,7 +29,6 @@ public class LeagueRankApplication {
         return true;
     }
 
-
     public static int lastSpacePos(String teamscore){
         for (int i = teamscore.length() - 1; i >= 0; i--) {
             if (!isNumeric(Character.toString(teamscore.charAt(i)))){
@@ -68,8 +67,8 @@ public class LeagueRankApplication {
 
     public static void main(String[] args) throws IOException {
 
-        var aiRanking = new AtomicInteger(0);
-        var aiPreviousPoints = new AtomicInteger(-1);
+        var prevRanking = new AtomicInteger(0);
+        var previousPoints = new AtomicInteger(-1);
         var numTeams = new AtomicInteger(0);
         Arrays.stream(getFileInput(args[0])
                 .split(System.getProperty("line.separator")))
@@ -81,8 +80,8 @@ public class LeagueRankApplication {
                 .entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .map(e -> new RankedTeam(e.getKey(),
-                                         e.getValue(), getRanking(aiRanking,
-                                                                  aiPreviousPoints,
+                                         e.getValue(), getRanking(prevRanking,
+                                                                  previousPoints,
                                                                   e.getValue(),
                                                                   numTeams)))
                 .sorted(Comparator.comparingInt(RankedTeam::getRank)
