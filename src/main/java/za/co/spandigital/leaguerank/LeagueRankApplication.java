@@ -17,21 +17,9 @@ public class LeagueRankApplication {
         return Files.readString(Path.of(filePath));
     }
 
-    public static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
-        try {
-            Double.parseDouble(strNum);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
-    }
-
     public static int lastSpacePos(String teamscore){
         for (int i = teamscore.length() - 1; i >= 0; i--) {
-            if (!isNumeric(Character.toString(teamscore.charAt(i)))){
+            if ((Character.toString(teamscore.charAt(i)).equals(" "))){
                 return i;
             }
         }
@@ -40,13 +28,10 @@ public class LeagueRankApplication {
 
     public static Match createMatch(String line){
         var teamScores = line.split(",");
-        var goals1 = teamScores[0].substring( lastSpacePos(teamScores[0]) + 1);
-        var team1  = teamScores[0].substring(0, lastSpacePos(teamScores[0])).trim();
-        var goals2 = teamScores[1].substring( lastSpacePos(teamScores[1]) + 1);
-        var team2  = teamScores[1].substring(0, lastSpacePos(teamScores[1])).trim();
-
-        return new Match(team1, Integer.parseInt(goals1),
-                         team2, Integer.parseInt(goals2));
+        return new Match(teamScores[0].substring(0, lastSpacePos(teamScores[0])).trim(),
+                        Integer.parseInt(teamScores[0].substring( lastSpacePos(teamScores[0]) + 1)),
+                        teamScores[1].substring(0, lastSpacePos(teamScores[1])).trim(),
+                        Integer.parseInt(teamScores[1].substring( lastSpacePos(teamScores[1]) + 1)));
     }
 
     public static int getRanking(AtomicInteger ranking,
