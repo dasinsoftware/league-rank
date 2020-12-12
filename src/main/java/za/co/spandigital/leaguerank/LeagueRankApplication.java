@@ -1,6 +1,7 @@
 package za.co.spandigital.leaguerank;
 
 import za.co.spandigital.leaguerank.model.Match;
+import za.co.spandigital.leaguerank.config.MatchResultConfig;
 import za.co.spandigital.leaguerank.model.RankedTeam;
 import za.co.spandigital.leaguerank.model.TeamPoints;
 
@@ -51,14 +52,14 @@ public class LeagueRankApplication {
     }
 
     public static void main(String[] args) throws IOException {
-
         var prevRanking = new AtomicInteger(0);
-        var previousPoints = new AtomicInteger(-1);
+        var prevPoints = new AtomicInteger(-1);
         var numTeams = new AtomicInteger(0);
+        MatchResultConfig matchResultConfig = new MatchResultConfig();
         Arrays.stream(getFileInput(args[0])
                 .split(System.getProperty("line.separator")))
                 .map(LeagueRankApplication::createMatch)
-                .map(Match::getResults)
+                .map(match -> match.getResults(matchResultConfig))
                 .flatMap(Collection::stream)
                 .collect(Collectors.groupingBy(TeamPoints::getTeam,
                          Collectors.summingInt(TeamPoints::getPoints)))
@@ -66,7 +67,7 @@ public class LeagueRankApplication {
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .map(e -> new RankedTeam(e.getKey(),
                                          e.getValue(), getRanking(prevRanking,
-                                                                  previousPoints,
+                                                                  prevPoints,
                                                                   e.getValue(),
                                                                   numTeams)))
                 .sorted(Comparator.comparingInt(RankedTeam::getRank)
