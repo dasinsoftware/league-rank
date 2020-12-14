@@ -11,16 +11,16 @@ public class Match{
         this.matchLine = matchLine;
     }
 
-    public String[] getSplit(){
+    public String[] getLineSplit(){
         return matchLine.split(",");
     }
 
     public String getHomeSide(){
-        return getSplit()[0].trim();
+        return getLineSplit()[0].trim();
     }
 
     public String getVisitingSide(){
-        return getSplit()[1].trim();
+        return getLineSplit()[1].trim();
     }
 
     public String getHomeTeamName(){

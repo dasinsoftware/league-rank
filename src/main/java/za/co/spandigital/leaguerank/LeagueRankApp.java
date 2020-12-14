@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * LeagueRankApp is a simple console application which computes league standings for teams.
+ * LeagueRankApp is a console application which computes league standings for teams.
  *
  * The application takes
  * a file of results of matches as its single argument.
@@ -73,7 +73,6 @@ public class LeagueRankApp {
 
         return line;
     }
-
 
     /**
      * Generates application command line options
@@ -141,24 +140,20 @@ public class LeagueRankApp {
                 .map(e -> new RankedTeam(e.getKey(),
                         e.getValue(), getRanking(prevRanking, prevPoints, e.getValue(), numTeams)))
                 .sorted(Comparator.comparingInt(RankedTeam::getRank)
-                        .thenComparing(TeamPoints::getTeam))
-                .forEach(rankedTeam ->
-                        System.out.println(rankedTeam.getRank() + ". " +
-                                rankedTeam.getTeam() + " , " +
-                                rankedTeam.getPoints() + " pt" +
-                                (rankedTeam.getPoints()==1?"":"s")));
+                                  .thenComparing(RankedTeam::getTeam))
+                .forEach(System.out::println);
     }
 
-    public int getRanking(AtomicInteger ranking,
+    public int getRanking(AtomicInteger previousranking,
                           AtomicInteger previousPoints,
                           Integer points,
                           AtomicInteger numTeams){
         int result;
         numTeams.addAndGet(1);
         if (points == previousPoints.get()){
-            result = ranking.get();
+            result = previousranking.get();
         }else{
-            ranking.addAndGet(1);
+            previousranking.addAndGet(1);
             result = numTeams.get();
         }
         previousPoints.set(points);
