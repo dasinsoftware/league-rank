@@ -13,12 +13,12 @@ repositories {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'za.co.spandigital.leaguerank.LeagueRankApplication'
+        attributes 'Main-Class': 'za.co.spandigital.leaguerank.LeagueRankEx'
     }
 }
 
 application {
-    mainClass = 'za.co.spandigital.leaguerank.LeagueRankApplication'
+    mainClass = 'za.co.spandigital.leaguerank.LeagueRankEx'
 }
 
 test {
@@ -28,11 +28,7 @@ test {
 
 dependencies {
     implementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    compile 'commons-cli:commons-cli:1.4'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
-//    compileOnly 'org.projectlombok:lombok:1.18.16'
-//    annotationProcessor 'org.projectlombok:lombok:1.18.16'
-//
-//    testCompileOnly 'org.projectlombok:lombok:1.18.16'
-//    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
 }

@@ -1,7 +1,7 @@
 package za.co.spandigital.leaguerank.config;
 
 import lombok.Data;
-import za.co.spandigital.leaguerank.LeagueRankApplication;
+import za.co.spandigital.leaguerank.LeagueRankEx;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,7 @@ public class MatchResultConfig {
     private int loss;
     private int draw;
     public MatchResultConfig(){
-        try (InputStream input = LeagueRankApplication.class.getClassLoader().getResourceAsStream("app.properties")) {
+        try (InputStream input = LeagueRankEx.class.getClassLoader().getResourceAsStream("app.properties")) {
             Properties prop = new Properties();
             if (input == null) {
                 System.out.println("Sorry, unable to find app.properties");

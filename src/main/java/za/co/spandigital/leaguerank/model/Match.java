@@ -5,33 +5,63 @@ import za.co.spandigital.leaguerank.config.MatchResultConfig;
 import java.util.List;
 
 public class Match{
-    String team1;
-    Integer goals1;
-    String team2;
-    Integer goals2;
+    String matchLine;
 
-
-    public Match(String team1, Integer goals1, String team2, Integer goals2 ){
-        this.team1 = team1;
-        this.goals1 = goals1;
-        this.team2 = team2;
-        this.goals2 = goals2;
+    public Match(String matchLine){
+        this.matchLine = matchLine;
     }
 
-    private Integer getTeam1Points(MatchResultConfig matchResultConfig){
-        return  goals1 > goals2 ?       matchResultConfig.getWin() :
-                goals1.equals(goals2) ? matchResultConfig.getDraw():
-                                        matchResultConfig.getLoss();
+    public String[] getSplit(){
+        return matchLine.split(",");
     }
 
-    private Integer getTeam2Points(MatchResultConfig matchResultConfig){
-        return  goals2 > goals1 ?       matchResultConfig.getWin() :
-                goals1.equals(goals2) ? matchResultConfig.getDraw() :
-                                        matchResultConfig.getLoss();
+    public String getHomeSide(){
+        return getSplit()[0].trim();
+    }
+
+    public String getVisitingSide(){
+        return getSplit()[1].trim();
+    }
+
+    public String getHomeTeamName(){
+        return getHomeSide().substring(0, lastSpacePos(getHomeSide())).trim();
+    }
+
+    public int getHomeTeamScore(){
+        return Integer.parseInt(getHomeSide().substring(lastSpacePos(getHomeSide()) + 1));
+    }
+
+    public String getVisitingTeamName(){
+        return getVisitingSide().substring(0, lastSpacePos(getVisitingSide())).trim();
+    }
+
+    public int getVisitingTeamScore(){
+        return Integer.parseInt(getVisitingSide().substring(lastSpacePos(getVisitingSide()) + 1));
+    }
+
+    private int lastSpacePos(String teamScore){
+        for (int i = teamScore.length() - 1; i >= 0; i--) {
+            if ((Character.toString(teamScore.charAt(i)).equals(" "))){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private Integer getHomeTeamPoints(MatchResultConfig matchResultConfig){
+        return  getHomeTeamScore() > getVisitingTeamScore() ?  matchResultConfig.getWin() :
+                getHomeTeamScore() == getVisitingTeamScore() ? matchResultConfig.getDraw():
+                                                               matchResultConfig.getLoss();
+    }
+
+    private Integer getVistingTeamPoints(MatchResultConfig matchResultConfig){
+        return  getVisitingTeamScore() > getHomeTeamScore() ?  matchResultConfig.getWin() :
+                getVisitingTeamScore() == getHomeTeamScore() ? matchResultConfig.getDraw() :
+                                                               matchResultConfig.getLoss();
     }
 
     public List<TeamPoints> getResults(MatchResultConfig matchResultConfig){
-        return List.of(new TeamPoints(team1, getTeam1Points(matchResultConfig)),
-                       new TeamPoints(team2, getTeam2Points(matchResultConfig)));
+        return List.of(new TeamPoints(getHomeTeamName(), getHomeTeamPoints(matchResultConfig)),
+                       new TeamPoints(getVisitingTeamName(), getVistingTeamPoints(matchResultConfig)));
     }
 }
