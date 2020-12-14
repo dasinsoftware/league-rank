@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,7 +28,7 @@ class LeagueRankExTest {
     }
 
     @Test
-    void main() throws IOException {
+    void main()  {
         LeagueRankEx.main(new String[]{"-f=match-scores.txt"});
         assertEquals("1. Taran6tulas , 6 pts\n" +
                               "2. Lions , 5 pts\n" +

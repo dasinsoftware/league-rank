@@ -22,19 +22,19 @@ On the command line, in the same directory where you ran the gradlew build from 
 
 ```
 cd build/install/league-rank/bin
-./league-rank <path to results-of-games-file.txt>
+./league-rank -f=<path to results-of-games-file.txt>
 ```
 
 ### macOS/Linux
 eg.
 ```
-./league-rank /home/test/results-of-games.txt
+./league-rank -f=/home/test/results-of-games.txt
 ```
 
 ### Windows
 eg.
 ```
-league-rank c:\home\test\results-of-games.txt
+league-rank f=c:\home\test\results-of-games.txt
 ```
 
 ## Sample input file format

@@ -4,10 +4,10 @@ import za.co.spandigital.leaguerank.config.MatchResultConfig;
 
 import java.util.List;
 
-public class Match{
+public class LeagueMatch {
     String matchLine;
 
-    public Match(String matchLine){
+    public LeagueMatch(String matchLine){
         this.matchLine = matchLine;
     }
 

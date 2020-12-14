@@ -2,7 +2,7 @@ package za.co.spandigital.leaguerank;
 
 import org.apache.commons.cli.*;
 import za.co.spandigital.leaguerank.config.MatchResultConfig;
-import za.co.spandigital.leaguerank.model.Match;
+import za.co.spandigital.leaguerank.model.LeagueMatch;
 import za.co.spandigital.leaguerank.model.RankedTeam;
 import za.co.spandigital.leaguerank.model.TeamPoints;
 
@@ -17,7 +17,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * LeagueRankApp is a console application which computes league standings for teams.
+ * LeagueRankApp is a console application which computes
+ * league standings from match scores.
  *
  * The application takes
  * a file of results of matches as its single argument.
@@ -130,15 +131,14 @@ public class LeagueRankApp {
         MatchResultConfig matchResultConfig = new MatchResultConfig();
         Arrays.stream(data
                 .split(System.getProperty("line.separator")))
-                .map(Match::new)
-                .map(match -> match.getResults(matchResultConfig))
+                .map(LeagueMatch::new)
+                .map(leagueMatch -> leagueMatch.getResults(matchResultConfig))
                 .flatMap(Collection::stream)
                 .collect(Collectors.groupingBy(TeamPoints::getTeam,
                         Collectors.summingInt(TeamPoints::getPoints)))
                 .entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .map(e -> new RankedTeam(e.getKey(),
-                        e.getValue(), getRanking(prevRanking, prevPoints, e.getValue(), numTeams)))
+                .map(e -> new RankedTeam(e.getKey(), e.getValue(), getRanking(prevRanking, prevPoints, e.getValue(), numTeams)))
                 .sorted(Comparator.comparingInt(RankedTeam::getRank)
                                   .thenComparing(RankedTeam::getTeam))
                 .forEach(System.out::println);
