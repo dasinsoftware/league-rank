@@ -18,9 +18,9 @@ public class LeagueRankApplication {
         return Files.readString(Path.of(filePath));
     }
 
-    public static int lastSpacePos(String teamscore){
-        for (int i = teamscore.length() - 1; i >= 0; i--) {
-            if ((Character.toString(teamscore.charAt(i)).equals(" "))){
+    public static int lastSpacePos(String teamScore){
+        for (int i = teamScore.length() - 1; i >= 0; i--) {
+            if ((Character.toString(teamScore.charAt(i)).equals(" "))){
                 return i;
             }
         }
