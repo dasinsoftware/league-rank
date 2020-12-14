@@ -34,7 +34,7 @@ eg.
 ### Windows
 eg.
 ```
-league-rank f=c:\home\test\results-of-games.txt
+league-rank -f=c:\home\test\results-of-games.txt
 ```
 
 ## Sample input file format
